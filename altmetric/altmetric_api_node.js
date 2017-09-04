@@ -37,3 +37,33 @@ https.get(options, (res) => {
 }).on("error", (err) => {
     process.stdout.write(`Caught an error ${err}\n`);
 })
+
+module.exports.fetchData = (foo, bar) => {
+    return new Promise((resolve, reject) => {
+        let options = {
+            host : config.altmetric_api_url,
+            path : config.altmetric.api_path,
+            headers: {"User-Agent": "request"}
+        };
+
+        let request = https.get(options, (res) => {
+            if (res.statusCode === 200) {
+                let body = "";
+
+                res.on("body", (chunk) => {
+                    body += chunk;
+                });
+
+                res.on("end", () => {
+                    resolve(JSON.parse(body));
+                });
+            } else {
+                reject(new Error(res.statusCode + ": " + res.statusMessage));
+            }
+        });
+
+        request.on("error", (err) => {
+            reject(err);
+        });
+    });
+}
