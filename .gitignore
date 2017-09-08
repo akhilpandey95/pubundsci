@@ -1,0 +1,3 @@
+#test-files
+modules/*/node/test.js
+modules/*/python/test.py
