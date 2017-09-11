@@ -7,66 +7,63 @@ import sys
 import nltk
 import string
 from nltk.corpus import wordnet
-from nltk import word_tokenize as tokenizer
 
 def change_pos_tag(entity):
-    try:
-        if type(entity) == 'str' and entity[0] == 'J':
-            changed_entity = 'a'
-        elif type(entity) == 'str':
-            changed_entity = string.lower(entity[0])
-        else:
-            changed_entity = None
-    except:
-        print "Unexpected error:"
-        raise
-    else:
-        return changed_entity
+    if entity.startswith('N'):
+        return 'n'
 
-def indentify_synset(word, pos_tag):
+    if entity.startswith('V'):
+        return 'v'
+
+    if entity.startswith('J'):
+        return 'a'
+
+    if entity.startswith('R'):
+        return 'r'
+
+    return None
+
+def indentify_synset(word, tag):
+    word_net_tag = change_pos_tag(tag)
+    if word_net_tag is None:
+        return None
+
     try:
-        word_net_tag = change_pos_tag(pos_tag)
-        if word_net_tag is None:
-            synset_item = None
-        else:
-            synset_item = wordnet.synset(word, word_net_tag)[0]
+        return wordnet.synsets(word, word_net_tag)[0]
     except:
-        print "Unexpect error:"
-        raise
-    else:
-        return synset_item
+        return None
 
 def gen_similarity_score(sentence_a, sentence_b):
-    try:
-        # Init the variables
-        similarity_score, simulation_count = 0.0, 0
+    # Init the variables
+    similarity_score, simulation_count = 0.0, 0
 
-        # POS tag and takenize the given sentences
-        sentence_a = nltk.pos_tag(tokenizer(sentence_a))
-        sentence_b = nltk.pos_tag(tokenizer(sentence_b))
+    # POS tag and takenize the given sentences
+    sentence_a = nltk.pos_tag(nltk.word_tokenize(sentence_a))
+    sentence_b = nltk.pos_tag(nltk.word_tokenize(sentence_b))
 
-        # Capture the synsets from the sentence and pass the unecessary args
-        # into a new empty dict
-        synset_of_senta = [identify_synset(*word) for word in sentence_a]
-        synset_of_sentb = [identify_synset(*word) for word in sentence_b]
+    # Capture the synsets from the sentence and pass the unecessary args
+    # into a new empty dict
+    synset_of_senta = [indentify_synset(word, tag) for word,tag in sentence_a]
+    synset_of_sentb = [indentify_synset(word, tag) for word,tag in sentence_b]
 
-        for synset in synset_of_senta:
-            efficiency = max([synset.path_similarity(s) for s in synset_of_sentb])
+    synset_of_senta = [s for s in synset_of_senta if s]
+    synset_of_sentb = [s for s in synset_of_sentb if s]
+
+    for synset in synset_of_senta:
+        efficiency = max([synset.path_similarity(s) for s in synset_of_sentb])
 
         if efficiency is not None:
             similarity_score += efficiency
             simulation_count += 1
 
-        similarity_score /= simulation_count
-    except:
-        print "Unexpected error:"
-        raise
-    else:
-        return similarity_score
+    similarity_score /= simulation_count
+    return similarity_score
+
 
 if __name__ == "__main__":
-    sentence_a = "Woman, without her man, is helpless."
-    sentence_b = "Woman! Without her, man is helpless!"
+    sentence_a = "Aluminium is part of a compound that is known to cause breast cancer."
+    sentence_b = "Aluminium is responsible for breast cancer."
     print gen_similarity_score(sentence_a, sentence_b)
+    print gen_similarity_score(sentence_b, sentence_a)
 else:
     sys.exit(0)
