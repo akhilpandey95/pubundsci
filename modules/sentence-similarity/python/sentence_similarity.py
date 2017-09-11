@@ -28,10 +28,7 @@ def indentify_synset(word, tag):
     if word_net_tag is None:
         return None
 
-    try:
-        return wordnet.synsets(word, word_net_tag)[0]
-    except:
-        return None
+    return wordnet.synsets(word, word_net_tag)[0]
 
 def gen_similarity_score(sentence_a, sentence_b):
     # Init the variables
@@ -60,10 +57,26 @@ def gen_similarity_score(sentence_a, sentence_b):
     return similarity_score
 
 
+def gen_symmetric_similarity_score(sentence_a, sentence_b):
+    symmetric_similarity_score = (gen_similarity_score(sentence_a, sentence_b) + gen_similarity_score(sentence_b, sentence_a))/2
+    return symmetric_similarity_score
+
 if __name__ == "__main__":
+    # sentence_a = "Aluminium is part of a compound that is known to cause breast cancer."
+    # sentence_b = "Aluminium is responsible for breast cancer."
+    # sentence_a = "Will you do it?"
+    # sentence_b = "Do you will it?"
+    # sentence_a = "Woman, without her man, is helpless."
+    # sentence_b = "Woman! Without her, man is helpless!"
+    # sentence_a = "Chances of you missing the flight are rare."
+    # sentence_b = "You will not miss the flight."
+    # sentence_a = "I should be able to finish the work this week."
+    # sentence_b = "I will finish the work this week."
     sentence_a = "Aluminium is part of a compound that is known to cause breast cancer."
     sentence_b = "Aluminium is responsible for breast cancer."
     print gen_similarity_score(sentence_a, sentence_b)
     print gen_similarity_score(sentence_b, sentence_a)
+    print gen_symmetric_similarity_score(sentence_a, sentence_b)
+    print gen_symmetric_similarity_score(sentence_b, sentence_a)
 else:
     sys.exit(0)
