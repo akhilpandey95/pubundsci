@@ -66,8 +66,11 @@ if __name__ == "__main__":
     # sentence_a = "Drinking coffee can probably help improve the quality of life."
     # sentence_b = "According to a research study, drinking coffee will affect your health"
 
-    sentence_a = "Drinking coffee can definitely help improve the quality of life."
-    sentence_b = "According to a research study, drinking coffee can surely help in improving the quality of your life"
+    sentence_a = "Woman, without her man, is helpless."
+    sentence_b = "Woman! with her, man is helpless!"
+
+    # sentence_a = "Drinking coffee can definitely help improve the quality of life."
+    # sentence_b = "According to a research study, drinking coffee can surely help in improving the quality of your life"
 
     # print tokenize_and_return(sentence_a)
     # print tokenize_and_return(sentence_b)
