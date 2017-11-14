@@ -5,8 +5,10 @@
 
 import re
 import sys
-from collections import Counter
+import nltk
 from itertools import groupby
+from collections import Counter
+from nltk.collocations import *
 from nltk.stem.porter import PorterStemmer
 
 """
@@ -53,8 +55,40 @@ def compute_yules_i_for_text(sentence):
     yules_i = (m1 * m1) / (m2 - m1)
     return yules_i
 
+def compute_collocation_score(sentence_one, sentence_two, option):
+    if option == "bi":
+        tokens_for_one = nltk.wordpunct_tokenize(sentence_one)
+        tokens_for_two = nltk.wordpunct_tokenize(sentence_two)
+
+        finder_one = BigramCollocationFinder.from_words(tokens_for_one)
+        finder_two = BigramCollocationFinder.from_words(tokens_for_two)
+
+        result_one = finder_one.score_ngrams(nltk.collocations.BigramAssocMeasures().raw_freq)
+
+        result_one = [(tuple(map(str.lower, values)), scores) for values, scores in result_one]
+
+        result_two = finder_two.score_ngrams(nltk.collocations.BigramAssocMeasures().raw_freq)
+
+        result_two = [(tuple(map(str.lower, values)), scores) for values, scores in result_two]
+
+
+        matches = [keys for keys in set(result_one).intersection(set(result_two))]
+        return result_one
+    elif option == "tri":
+        tokens_for_one = nltk.wordpunct_tokenize(sentence_one)
+        tokens_for_two = nltk.wordpunct_tokenize(sentence_two)
+        finder_one = TrigramCollocationFinder.from_words(tokens_for_one)
+        finder_two = TrigramCollocationFinder.from_words(tokens_for_two)
+        result = finder_one.score_ngrams(nltk.collocations.TrigramAssocMeasures().raw_freq)
+        return result
+    else:
+        return 0
+
 if __name__ == "__main__":
     s = "The smoothing span is given by f. A larger value for f will result in a smoother curve. The number of robustifying iterations is given by iter. The function will run faster with a smaller number of iterations."
+    a = "Although population-level genomic sequence data have been gathered extensively for humans similar data from our closest living relatives are just beginning to emerge. Examination of genomic variation within great apes offers many opportunities to increase our understanding of the forces that have differentially shaped the evolutionary history of hominid taxa. Here we expand upon the work of the Great Ape Genome Project by analyzing medium to high coverage whole-genome sequences from 14 western lowland gorillas (Gorilla gorilla gorilla) 2 eastern lowland gorillas (G. beringei graueri) and a single Cross River individual (G. gorilla diehli). We infer that the ancestors of western and eastern lowland gorillas diverged from a common ancestor approximately 261 ka and that the ancestors of the Cross River population diverged from the western lowland gorilla lineage approximately 68 ka. Using a diffusion approximation approach to model the genome-wide site frequency spectrum we infer a history of western lowland gorillas that includes an ancestral population expansion of 1.4-fold around 970 ka and a recent 5.6-fold contraction in population size 23 ka. The latter may correspond to a major reduction in African equatorial forests around the Last Glacial Maximum. We also analyze patterns of variation among western lowland gorillas to identify several genomic regions with strong signatures of recent selective sweeps. We find that processes related to taste pancreatic and saliva secretion sodium ion transmembrane transport and cardiac muscle function are overrepresented in genomic regions predicted to have experienced recent positive selection."
+    b = "Please note: this list is intended as a resource for those of you who are interested in responding to other CEHG members&rsquo; works for the blog. Let the blog editor (kkanagaw@stanford.edu) know if there are other publications that should be added to the"
     print compute_yules_i_for_text(s)
+    print compute_collocation_score(a, b, "bi")
 else:
     sys.exit(0)
