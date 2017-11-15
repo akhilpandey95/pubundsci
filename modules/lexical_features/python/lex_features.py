@@ -6,6 +6,7 @@
 import re
 import sys
 import nltk
+import numpy as np
 from itertools import groupby
 from collections import Counter
 from nltk.collocations import *
@@ -16,6 +17,24 @@ m1 - The number of all word forms a text consists
 m2 - The sum of the products of each observed frequency to the power of two
      and the number of word types observed with that frequency
 """
+
+def compute_average_word_length(sentence):
+    return np.mean([len(words) for words in sentence.split()])
+
+def compute_average_sentence_length(sentence):
+    sentence = re.split("(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s", sentence)
+    return np.mean([len(words) for words in sentence])
+
+def freq_of_words_great_sent_len(sentence):
+    result = []
+    avg_word_len = compute_average_word_length(sentence)
+    # sentence = re.split("(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s", sentence)
+    sentence = Counter(sentence.split())
+    for key, value in sentence.items():
+        if len(key) > avg_word_len:
+            result.append(value)
+        # print key, value
+    return np.mean(result), avg_word_len
 
 def tokenize(sentence):
     return re.split(r"[^0-9A-Za-z\-'_]+", sentence)
@@ -29,7 +48,7 @@ def compute_yules_k_for_text(sentence):
     m2 = sum([frequency ** 2 for frequency in counter.values()])
 
     #compute yules k measure and return the value
-    yules_k = 10000/((m1 * m2) / (m2 - m1))
+    yules_k = 10000/((m1 * m1) / (m2 - m1))
     return yules_k
 
 
@@ -86,6 +105,9 @@ if __name__ == "__main__":
     a = "Although population-level genomic sequence data have been gathered extensively for humans similar data from our closest living relatives are just beginning to emerge. Examination of genomic variation within great apes offers many opportunities to increase our understanding of the forces that have differentially shaped the evolutionary history of hominid taxa. Here we expand upon the work of the Great Ape Genome Project by analyzing medium to high coverage whole-genome sequences from 14 western lowland gorillas (Gorilla gorilla gorilla) 2 eastern lowland gorillas (G. beringei graueri) and a single Cross River individual (G. gorilla diehli). We infer that the ancestors of western and eastern lowland gorillas diverged from a common ancestor approximately 261 ka and that the ancestors of the Cross River population diverged from the western lowland gorilla lineage approximately 68 ka. Using a diffusion approximation approach to model the genome-wide site frequency spectrum we infer a history of western lowland gorillas that includes an ancestral population expansion of 1.4-fold around 970 ka and a recent 5.6-fold contraction in population size 23 ka. The latter may correspond to a major reduction in African equatorial forests around the Last Glacial Maximum. We also analyze patterns of variation among western lowland gorillas to identify several genomic regions with strong signatures of recent selective sweeps. We find that processes related to taste pancreatic and saliva secretion sodium ion transmembrane transport and cardiac muscle function are overrepresented in genomic regions predicted to have experienced recent positive selection."
     b = "Please note: this list is intended as a resource for those of you who are interested in responding to other CEHG members&rsquo; works for the blog. Let the blog editor (kkanagaw@stanford.edu) know if there are other publications that should be added to the"
     print compute_yules_i_for_text(s)
-    print compute_collocation_score(a, b, "tri")
+    print compute_collocation_score(a, b, "bi")
+    print compute_average_word_length(s)
+    print compute_average_sentence_length(a)
+    print freq_of_words_great_sent_len(a)
 else:
     sys.exit(0)
