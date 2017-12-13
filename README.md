@@ -11,8 +11,20 @@ For suppose a Research Institute/Organization publishes a scientific report on "
 Altmetric is a web application that is host to a repository of information regarding scholarly texts. Using altmetric there was provision to download meta information linked to a scholarly article. This would include Tweets, Facebook Posts, News Mentions, Blog posts and Scientific research websites.  The data dump that was considered for this experiment included information regarding 5.2 million research articles.
 
 # Results
-TBA
+Features choosen for the regression module:
+  - Lexical Diversity of the Abstract, Blog post
+  - Collocation Simularity of Abstract with Blog post (Bigrams & Trigrams)
+  - Average Word Length and Sentence Length of Abstract and Blog post
+  - Frequency of Words greater than Average word length both in Abstract and Blog post
+
+Below are the results(MSE, R2) of various regression modules applied to the dataset
+
+| Types                          | MSE | R2|
+|--------------------------------|:--------------:|:-----------------:|
+| **KNN** | 0.00436318476858 | 0.00436318476858 |
+| **Decision Tree** | 0.00221522186832 | 0.697125616748  |
+| **Random Forest** | 0.00143580930204 | 0.803690157162  |
 
 # Authors
-[Akhil Pandey](https://github.com/akhilpandey95), [Harish Varma][http://github.com/harishsiravuri]
+[Akhil Pandey](https://github.com/akhilpandey95), [Harish Varma](http://github.com/harishsiravuri)
 
